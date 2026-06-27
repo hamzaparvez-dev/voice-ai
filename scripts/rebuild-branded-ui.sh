@@ -22,4 +22,10 @@ docker compose \
   --profile local-turn \
   up -d ui
 
-echo "Done. Refresh http://YOUR_IP:3010 (hard refresh: Cmd+Shift+R)"
+echo "Done. Refresh https://voice.genuinestack.com (hard refresh: Cmd+Shift+R)"
+echo ""
+echo "Also update dograh/.env on the server if uploads still fail:"
+echo "  BACKEND_API_ENDPOINT=https://voice.genuinestack.com"
+echo "  MINIO_PUBLIC_ENDPOINT=https://voice.genuinestack.com"
+echo "  PUBLIC_HOST=voice.genuinestack.com"
+echo "  Then: docker compose --profile local-turn restart api"

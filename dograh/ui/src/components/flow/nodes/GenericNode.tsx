@@ -13,6 +13,7 @@ import { FlowNodeData } from "@/components/flow/types";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NODE_DOCUMENTATION_URLS } from "@/constants/documentation";
+import { getPublicBackendUrl } from "@/lib/backendUrl";
 import { cn } from "@/lib/utils";
 
 import { NodeContent } from "./common/NodeContent";
@@ -92,9 +93,7 @@ function buildTriggerEndpoints(
     triggerPath: string | undefined,
 ): TriggerEndpoints {
     if (!triggerPath) return { production: "", test: "" };
-    const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL ||
-        (typeof window !== "undefined" ? window.location.origin : "");
+    const backendUrl = getPublicBackendUrl();
     return {
         production: `${backendUrl}/api/v1/public/agent/${triggerPath}`,
         test: `${backendUrl}/api/v1/public/agent/test/${triggerPath}`,

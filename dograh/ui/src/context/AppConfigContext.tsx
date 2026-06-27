@@ -2,6 +2,8 @@
 
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 
+import { getPublicBackendUrl } from '@/lib/backendUrl';
+
 type BackendStatus = 'reachable' | 'unreachable';
 
 interface AppConfig {
@@ -30,10 +32,8 @@ const defaultConfig: AppConfig = {
     turnEnabled: false,
     forceTurnRelay: false,
     backendStatus: 'unreachable',
-    backendUrl: process.env.NEXT_PUBLIC_BACKEND_URL || 'unknown',
-    backendMessage: process.env.NEXT_PUBLIC_BACKEND_URL
-        ? `Unable to verify backend health at ${process.env.NEXT_PUBLIC_BACKEND_URL}.`
-        : 'Unable to verify backend health.',
+    backendUrl: getPublicBackendUrl(),
+    backendMessage: `Unable to verify backend health at ${getPublicBackendUrl()}.`,
 };
 
 const AppConfigContext = createContext<AppConfigContextType>({

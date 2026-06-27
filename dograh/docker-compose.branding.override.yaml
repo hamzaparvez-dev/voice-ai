@@ -4,5 +4,9 @@ services:
     build:
       context: .
       dockerfile: ui/Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: https://voice.genuinestack.com
     image: genuinestack/dograh-ui:local
     pull_policy: never
+    environment:
+      BACKEND_URL: "${BACKEND_URL:-http://api:8000}"

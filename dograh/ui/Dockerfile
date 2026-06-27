@@ -36,8 +36,10 @@ COPY ui/public ./public
 COPY ui/src ./src
 
 # Set build-time environment variables (needed for Next.js build)
+ARG NEXT_PUBLIC_BACKEND_URL=https://voice.genuinestack.com
 ENV NEXT_PUBLIC_NODE_ENV="oss"
 ENV NEXT_TELEMETRY_DISABLED="1"
+ENV NEXT_PUBLIC_BACKEND_URL=${NEXT_PUBLIC_BACKEND_URL}
 ENV BACKEND_URL="http://api:8000"
 
 # Build the application with standalone mode

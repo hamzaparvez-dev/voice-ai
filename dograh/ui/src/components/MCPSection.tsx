@@ -6,11 +6,10 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { getPublicBackendUrl } from "@/lib/backendUrl";
 
 export function MCPSection() {
-  const backendUrl =
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    (typeof window !== "undefined" ? window.location.origin : "");
+  const backendUrl = getPublicBackendUrl();
   const endpoint = `${backendUrl}/api/v1/mcp/`;
 
   const [endpointCopied, setEndpointCopied] = useState(false);

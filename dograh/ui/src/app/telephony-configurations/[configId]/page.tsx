@@ -57,14 +57,12 @@ import {
 } from "@/components/ui/table";
 import { detailFromError } from "@/lib/apiError";
 import { useAuth } from "@/lib/auth";
+import { getPublicBackendUrl } from "@/lib/backendUrl";
 
 const INBOUND_WEBHOOK_PATH = "/api/v1/telephony/inbound/run";
 
 function getInboundWebhookUrl(): string {
-  const backendUrl =
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    (typeof window !== "undefined" ? window.location.origin : "");
-  return `${backendUrl}${INBOUND_WEBHOOK_PATH}`;
+  return `${getPublicBackendUrl()}${INBOUND_WEBHOOK_PATH}`;
 }
 
 export default function TelephonyConfigurationDetailPage() {

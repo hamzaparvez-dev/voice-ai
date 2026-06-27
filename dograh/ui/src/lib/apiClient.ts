@@ -1,20 +1,13 @@
 import type { Client } from '@/client/client';
 import type { CreateClientConfig } from '@/client/client.gen';
 
-export function getServerBackendUrl() {
-    return process.env.BACKEND_URL || 'http://api:8000';
-}
+import { getPublicBackendUrl, getServerBackendUrl } from '@/lib/backendUrl';
+
+export { getPublicBackendUrl, getServerBackendUrl } from '@/lib/backendUrl';
 
 export const createClientConfig: CreateClientConfig = (config) => {
-    // Use different URLs for server-side vs client-side
     const isServer = typeof window === 'undefined';
-    let baseUrl: string;
-
-    if (isServer) {
-        baseUrl = getServerBackendUrl();
-    } else {
-        baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || window.location.origin;
-    }
+    const baseUrl = isServer ? getServerBackendUrl() : getPublicBackendUrl();
 
     return {
         ...config,
