@@ -32,6 +32,7 @@ import {
   ONBOARDING_PERSONA_OPTIONS,
   ONBOARDING_VOLUME_OPTIONS,
 } from "./leadFieldOptions";
+import { BRAND } from "@/constants/branding";
 import { LeadModalShell } from "./LeadModalShell";
 import { submitLead } from "./submitLead";
 import { type OnboardingAnswers, submitOnboarding } from "./submitOnboarding";
@@ -190,7 +191,7 @@ export function OnboardingModal({ open, onComplete }: OnboardingModalProps) {
       }}
       icon={Rocket}
       eyebrow="Welcome"
-      title="Welcome to Dograh"
+      title={`Welcome to ${BRAND.name}`}
       description="A few quick questions so we can tailor your experience. Takes ~20 seconds."
       primary={{ label: "Get started", onClick: handleSubmit, disabled: !canSubmit, loading: submitting }}
       overlay={captchaActive ? <CaptchaChallenge onVerified={submitWithOnPrem} onCancel={() => setCaptchaActive(false)} /> : undefined}

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { PostHogEvent } from "@/constants/posthog-events";
+import { BRAND } from "@/constants/branding";
 import { useLeadForms } from "@/context/LeadFormsContext";
 import { useAuth } from "@/lib/auth";
 
@@ -47,9 +48,9 @@ export function DograhCreditsCard() {
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Dograh Model Credits</CardTitle>
+        <CardTitle>{BRAND.name} Model Credits</CardTitle>
         <CardDescription>
-          These track usage of Dograh models using Dograh Service Keys.
+          These track usage of managed AI models using platform service keys.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -83,7 +84,7 @@ export function DograhCreditsCard() {
           </div>
         ) : (
           <p className="text-muted-foreground">
-            No Dograh service keys configured. Set up a service key in your model configuration to see usage.
+            No platform service keys configured. Set up a service key in your model configuration to see usage.
           </p>
         )}
 

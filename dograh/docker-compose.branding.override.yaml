@@ -1,0 +1,8 @@
+# Build UI from source with GenuineStack branding.
+services:
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    image: genuinestack/dograh-ui:local
+    pull_policy: never

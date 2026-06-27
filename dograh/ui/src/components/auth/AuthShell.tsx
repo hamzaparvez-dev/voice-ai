@@ -10,11 +10,12 @@
 import type { ReactNode } from "react";
 
 import { BrandLogo } from "@/components/BrandLogo";
+import { BRAND } from "@/constants/branding";
 
 const HIGHLIGHTS = [
-  "Speech-to-speech",
-  "MCP-native",
-  "BYOK - any model",
+  "Bilingual EN/JP",
+  "Self-hosted",
+  "APPI compliant",
 ];
 
 export function AuthShell({
@@ -55,7 +56,7 @@ export function AuthShell({
 
         <div className="relative max-w-md space-y-5">
           <h1 className="text-3xl font-semibold leading-tight tracking-tight text-zinc-50 xl:text-4xl">
-            The open-source voice AI platform.
+            {BRAND.tagline}
           </h1>
           <ul className="flex flex-wrap gap-2">
             {HIGHLIGHTS.map((point) => (
@@ -73,11 +74,11 @@ export function AuthShell({
             viewport edge while justify-between keeps the column layout */}
         <div className="relative mb-12 max-w-md space-y-3 rounded-xl border border-white/10 bg-white/[0.03] p-5 xl:mb-16">
           <h2 className="text-sm font-semibold text-zinc-100">
-            Need on-prem, data residency &amp; a data perimeter?
+            Enterprise deployment for Japan
           </h2>
           <p className="text-sm text-zinc-400">
-            We deploy Dograh inside your environment for regulated and
-            high-scale teams.
+            {BRAND.name} runs on your infrastructure with full data residency for
+            regulated teams.
           </p>
           {enterpriseSlot}
         </div>

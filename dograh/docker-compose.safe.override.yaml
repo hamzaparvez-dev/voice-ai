@@ -1,0 +1,7 @@
+# Safe sidecar override — keeps Postgres/Redis off host ports 5432/6379.
+# Used by scripts/deploy-vps-safe.sh on shared VPS hosts.
+services:
+  postgres:
+    ports: !reset []
+  redis:
+    ports: !reset []
