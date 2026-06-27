@@ -5,4 +5,5 @@ export const BRAND = {
   description: "GenuineStack Japan — AI voice agent platform with full data residency.",
   managedModelsLabel: "Managed AI",
   hidePromotionalLinks: true,
+  useExternalChat: false,
 } as const;
