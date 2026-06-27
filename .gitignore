@@ -1,0 +1,26 @@
+# Environment
+.env
+dograh/.env
+
+# Docker volumes
+dograh/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node/Python (if developing)
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+
+# Backups
+*.sql
+backup/
