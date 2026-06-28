@@ -92,7 +92,7 @@ function ChatwootExternalWidget() {
 
 export default function SupportWidget() {
   const useExternalChat =
-    BRAND.useExternalChat === true
+    BRAND.useExternalChat
     && Boolean(CHATWOOT_BASE_URL)
     && Boolean(CHATWOOT_WEBSITE_TOKEN);
 

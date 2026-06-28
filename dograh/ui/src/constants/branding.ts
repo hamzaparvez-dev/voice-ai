@@ -1,4 +1,14 @@
-export const BRAND = {
+export type BrandConfig = {
+  readonly name: string;
+  readonly tagline: string;
+  readonly shortTagline: string;
+  readonly description: string;
+  readonly managedModelsLabel: string;
+  readonly hidePromotionalLinks: boolean;
+  readonly useExternalChat: boolean;
+};
+
+export const BRAND: BrandConfig = {
   name: "GenuineStack",
   tagline: "Production AI voice agents for enterprise customer experience.",
   shortTagline: "Self-hosted bilingual voice AI for Japanese enterprises.",
@@ -6,4 +16,4 @@ export const BRAND = {
   managedModelsLabel: "Managed AI",
   hidePromotionalLinks: true,
   useExternalChat: false,
-} as const;
+};
