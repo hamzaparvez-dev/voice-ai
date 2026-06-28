@@ -1,9 +1,8 @@
-import { AlertCircle, CreditCard, ExternalLink, Key } from "lucide-react";
+import { AlertCircle, CreditCard, Key } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-
-const SERVICE_KEYS_DOCS_URL = "https://docs.dograh.com/configurations/api-keys#service-keys";
+import { BRAND } from "@/constants/branding";
 
 interface ApiKeyErrorDialogProps {
     open: boolean;
@@ -60,18 +59,13 @@ export const ApiKeyErrorDialog = ({
                                 <p className="font-medium text-foreground">{error}</p>
                                 {isBillingCreditsError && (
                                     <p className="text-muted-foreground">
-                                        Purchase credits from Billing to continue using Dograh-managed models.
+                                        Add credits from Billing or configure your own model keys in Model Configurations to continue.
                                     </p>
                                 )}
                                 {isServiceKeyOrgMismatch && (
-                                    <a
-                                        href={SERVICE_KEYS_DOCS_URL}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-0.5 text-muted-foreground underline"
-                                    >
-                                        Learn more <ExternalLink className="h-3 w-3" />
-                                    </a>
+                                    <p className="text-muted-foreground">
+                                        Ensure the service key belongs to this organization in {BRAND.name} Developers.
+                                    </p>
                                 )}
                             </div>
                         </div>

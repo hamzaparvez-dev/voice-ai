@@ -1,24 +1,10 @@
+import { BRAND } from "@/constants/branding";
+
 export default function Footer() {
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-background border-t border-border py-4 px-6">
-      <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground">
-        <a
-          href="https://www.dograh.com/privacy-policy"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-foreground transition-colors"
-        >
-          Privacy Policy
-        </a>
-        <span className="text-border">|</span>
-        <a
-          href="https://www.dograh.com/terms-of-service"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-foreground transition-colors"
-        >
-          Terms of Service
-        </a>
+    <footer className="fixed bottom-0 left-0 right-0 border-t border-border bg-background px-6 py-4">
+      <div className="flex items-center justify-center text-sm text-muted-foreground">
+        <span>&copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.</span>
       </div>
     </footer>
   );

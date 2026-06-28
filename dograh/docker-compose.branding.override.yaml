@@ -1,4 +1,5 @@
 # Build UI from source with GenuineStack branding.
+# Chatwoot is disabled via branding.ts (useExternalChat: false) — no NEXT_PUBLIC_CHATWOOT_* vars needed.
 services:
   ui:
     build:

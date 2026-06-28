@@ -1,4 +1,7 @@
-const DOCS_BASE = "https://docs.dograh.com";
+/** External product docs are disabled for white-label GenuineStack deployments. */
+export const DOCS_ENABLED = false;
+
+const DOCS_BASE = "#";
 
 export const NODE_DOCUMENTATION_URLS: Record<string, string> = {
     startCall: `${DOCS_BASE}/voice-agent/start-call`,
@@ -22,7 +25,6 @@ export const SETTINGS_DOCUMENTATION_URLS: Record<string, string> = {
     general: `${DOCS_BASE}/voice-agent/editing-a-workflow`,
     modelOverrides: `${DOCS_BASE}/configurations/inference-providers`,
     templateVariables: `${DOCS_BASE}/voice-agent/template-variables`,
-
     recordings: `${DOCS_BASE}/voice-agent/pre-recorded-audio`,
     deployment: `${DOCS_BASE}/voice-agent/add-to-website`,
 };
@@ -38,3 +40,22 @@ export const TOOL_DOCUMENTATION_URLS: Record<string, string> = {
     end_call: `${DOCS_BASE}/voice-agent/tools/end-call`,
     transfer_call: `${DOCS_BASE}/voice-agent/tools/call-transfer`,
 };
+
+export const SERVICE_KEYS_DOC_URL = `${DOCS_BASE}/configurations/api-keys#service-keys`;
+
+export const INTERRUPTION_DOC_URL = `${DOCS_BASE}/configurations/interruption`;
+
+export const MCP_DOC_URL = `${DOCS_BASE}/integrations/mcp`;
+
+export const TRACING_DOC_URL = `${DOCS_BASE}/configurations/tracing`;
+
+export const TELEPHONY_OVERVIEW_DOC_URL = `${DOCS_BASE}/integrations/telephony/overview`;
+
+export const TELEPHONY_INBOUND_DOC_URL = `${DOCS_BASE}/integrations/telephony/inbound`;
+
+export function documentationHref(url: string | undefined): string | undefined {
+    if (!DOCS_ENABLED || !url || url === "#") {
+        return undefined;
+    }
+    return url;
+}

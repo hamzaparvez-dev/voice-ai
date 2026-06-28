@@ -30,8 +30,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: BRAND.name,
+  title: {
+    default: BRAND.name,
+    template: `%s | ${BRAND.name}`,
+  },
   description: BRAND.description,
+  applicationName: BRAND.name,
 };
 
 export default function RootLayout({

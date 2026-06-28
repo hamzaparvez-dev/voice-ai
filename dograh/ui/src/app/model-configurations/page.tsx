@@ -1,6 +1,6 @@
 
 import ModelConfigurationV2 from "@/components/ModelConfigurationV2";
-import { SETTINGS_DOCUMENTATION_URLS } from "@/constants/documentation";
+import { DOCS_ENABLED, SETTINGS_DOCUMENTATION_URLS } from "@/constants/documentation";
 
 interface ServiceConfigurationPageProps {
     searchParams?: Promise<{
@@ -17,7 +17,7 @@ export default async function ServiceConfigurationPage({ searchParams }: Service
             <div className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <ModelConfigurationV2
-                        docsUrl={SETTINGS_DOCUMENTATION_URLS.modelOverrides}
+                        docsUrl={DOCS_ENABLED ? SETTINGS_DOCUMENTATION_URLS.modelOverrides : undefined}
                         initialAction={action}
                     />
                 </div>

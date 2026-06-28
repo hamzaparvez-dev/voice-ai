@@ -13,7 +13,15 @@ export const BRAND: BrandConfig = {
   tagline: "Production AI voice agents for enterprise customer experience.",
   shortTagline: "Self-hosted bilingual voice AI for Japanese enterprises.",
   description: "GenuineStack Japan — AI voice agent platform with full data residency.",
-  managedModelsLabel: "Managed AI",
+  managedModelsLabel: "Built-in AI",
   hidePromotionalLinks: true,
   useExternalChat: false,
 };
+
+/** Replace legacy platform names returned by the API with white-label copy. */
+export function localizePlatformLabel(text: string): string {
+  return text
+    .replace(/Default Dograh Model Service Key/gi, `Default ${BRAND.name} Built-in Service Key`)
+    .replace(/Dograh Model Service Key/gi, `${BRAND.name} Built-in Service Key`)
+    .replace(/\bDograh\b/g, BRAND.name);
+}

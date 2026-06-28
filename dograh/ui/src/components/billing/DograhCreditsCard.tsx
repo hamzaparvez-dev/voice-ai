@@ -15,7 +15,7 @@ import { BRAND } from "@/constants/branding";
 import { useLeadForms } from "@/context/LeadFormsContext";
 import { useAuth } from "@/lib/auth";
 
-export function DograhCreditsCard() {
+export function GenuineStackCreditsCard() {
   const auth = useAuth();
   const { openHireExpert, openEnterprise } = useLeadForms();
   const [mpsCredits, setMpsCredits] = useState<MpsCreditsResponse | null>(null);
