@@ -36,6 +36,16 @@ export const metadata: Metadata = {
   },
   description: BRAND.description,
   applicationName: BRAND.name,
+  openGraph: {
+    title: BRAND.name,
+    description: BRAND.shortTagline,
+    siteName: BRAND.name,
+  },
+  twitter: {
+    card: "summary",
+    title: BRAND.name,
+    description: BRAND.shortTagline,
+  },
 };
 
 export default function RootLayout({

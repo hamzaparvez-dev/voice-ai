@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { VoiceSelector } from "@/components/VoiceSelector";
 import { LANGUAGE_DISPLAY_NAMES } from "@/constants/languages";
+import { localizeProviderName } from "@/constants/branding";
 import { useUserConfig } from "@/context/UserConfigContext";
 import type { ModelOverrides } from "@/types/workflow-configurations";
 
@@ -115,7 +116,7 @@ function getProviderDisplayName(
     providerSchema: ProviderSchema | undefined,
 ): string | undefined {
     if (!provider) return provider;
-    return providerSchema?.title || provider;
+    return localizeProviderName(providerSchema?.title || provider);
 }
 
 function getGlobalSummary(

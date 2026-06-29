@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { signupApiV1AuthSignupPost } from "@/client/sdk.gen";
 import { AuthEnterpriseCTA } from "@/components/auth/AuthEnterpriseCTA";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -60,6 +61,9 @@ export default function SignupPage() {
 
   return (
     <AuthShell enterpriseSlot={<AuthEnterpriseCTA />}>
+      <div className="flex justify-center">
+        <BrandLogo className="h-7" />
+      </div>
       <div className="space-y-1.5 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1>
         <p className="text-sm text-muted-foreground">Enter your details to get started</p>

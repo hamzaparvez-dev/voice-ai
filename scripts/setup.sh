@@ -59,16 +59,14 @@ else
     echo "✅ .env already exists"
 fi
 
-# Start Dograh
+# Start GenuineStack (branded UI from source)
 echo ""
-echo "🚀 Starting Dograh (first run may take 2-3 minutes)..."
-chmod +x scripts/start_docker.sh 2>/dev/null || true
+echo "🚀 Starting GenuineStack (first run builds UI — may take 5 minutes)..."
 
-if [ -f scripts/start_docker.sh ]; then
-    ./scripts/start_docker.sh
-else
-    docker compose up -d
-fi
+docker compose \
+  -f docker-compose.yaml \
+  -f docker-compose.branding.override.yaml \
+  up -d --build ui --pull always
 
 echo ""
 echo "=========================================="

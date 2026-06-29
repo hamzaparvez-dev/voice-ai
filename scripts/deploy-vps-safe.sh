@@ -66,15 +66,16 @@ services:
 EOF
 
 echo ""
-echo "Starting Dograh (local-turn profile — no nginx on 80/443)..."
-echo "This may take 3-5 minutes on first run."
+echo "Starting GenuineStack (branded UI, local-turn profile — no nginx on 80/443)..."
+echo "First run builds UI from source (~5 min). Subsequent runs are faster."
 echo ""
 
 docker compose \
   -f docker-compose.yaml \
   -f docker-compose.safe.override.yaml \
+  -f docker-compose.branding.override.yaml \
   --profile local-turn \
-  up -d --pull always
+  up -d --build ui --pull always
 
 echo ""
 echo "=========================================="
@@ -87,6 +88,6 @@ echo ""
 echo "  Add Hostinger firewall rules (do NOT change 80/443/8080/8088/18789):"
 echo "    TCP 3010, TCP 8000, TCP 3478, UDP 3478, UDP 49152-49200"
 echo ""
-echo "  Check status:  cd $DOGRAH_DIR && docker compose --profile local-turn ps"
-echo "  View logs:     cd $DOGRAH_DIR && docker compose logs -f api"
+echo "  Check status:  cd $DOGRAH_DIR && docker compose -f docker-compose.yaml -f docker-compose.safe.override.yaml -f docker-compose.branding.override.yaml --profile local-turn ps"
+echo "  View logs:     cd $DOGRAH_DIR && docker compose -f docker-compose.yaml -f docker-compose.safe.override.yaml -f docker-compose.branding.override.yaml --profile local-turn logs -f api"
 echo ""
