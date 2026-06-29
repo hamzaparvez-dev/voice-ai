@@ -1,0 +1,363 @@
+{
+  "name": "ICMG L&D Training Assistant",
+  "workflow_definition": {
+    "nodes": [
+      {
+        "id": "global-icmg",
+        "type": "globalNode",
+        "position": { "x": 0, "y": 0 },
+        "data": {
+          "name": "Global ICMG L&D Rules",
+          "prompt": "You are the AI voice assistant for ICMG Learning & Development, serving employees across ICMG portfolio companies. Detect whether the caller speaks English or Japanese and respond in the same language. Keep all responses to 1-3 sentences for voice calls. Never invent facts—use only knowledge base content. Use formal Keigo (です/ます, 様) when speaking Japanese. At the start of calls, mention that the call may be recorded for quality and compliance purposes."
+        }
+      },
+      {
+        "id": "start-icmg",
+        "type": "startCall",
+        "position": { "x": 400, "y": 50 },
+        "data": {
+          "name": "Greeting",
+          "prompt": "Greet the employee warmly. In English say: 'Hello, and welcome to ICMG Learning and Development. This call may be recorded for quality and compliance purposes. How may I assist you with your training today?' If the caller speaks Japanese, switch to: 'こんにちは。ICMGラーニング＆デベロップメントデスクへようこそ。品質向上およびコンプライアンスのため、この通話は録音される場合がございます。本日はどのようなご用件でしょうか。'",
+          "is_start": true,
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true
+        }
+      },
+      {
+        "id": "main-dialogue",
+        "type": "agentNode",
+        "position": { "x": 400, "y": 200 },
+        "data": {
+          "name": "Main L&D Dialogue",
+          "prompt": "Help the employee with training courses, enrollment, schedules, or compliance requirements. Answer from the knowledge base only. Ask clarifying questions if needed. If the caller seems frustrated or asks something outside your knowledge, prepare to escalate to a human L&D coordinator.",
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true,
+          "extraction_enabled": true,
+          "extraction_variables": [
+            {
+              "name": "learner_intent",
+              "type": "string",
+              "prompt": "What is the caller's primary intent: course_catalog, enrollment, schedule, compliance, or other?"
+            },
+            {
+              "name": "caller_language",
+              "type": "string",
+              "prompt": "What language is the caller primarily using: English or Japanese?"
+            },
+            {
+              "name": "employee_department",
+              "type": "string",
+              "prompt": "What department or portfolio company does the employee belong to, if mentioned?"
+            },
+            {
+              "name": "course_interest",
+              "type": "string",
+              "prompt": "Which specific course or training topic is the employee asking about, if mentioned?"
+            },
+            {
+              "name": "call_sentiment",
+              "type": "string",
+              "prompt": "What is the overall sentiment of the caller: positive, neutral, negative, or frustrated?"
+            }
+          ]
+        }
+      },
+      {
+        "id": "catalog-node",
+        "type": "agentNode",
+        "position": { "x": 50, "y": 400 },
+        "data": {
+          "name": "Course Catalog Response",
+          "prompt": "Describe available training programmes: leadership, compliance, onboarding, technical skills, and soft skills. Mention delivery formats (online, in-person, hybrid) and that manager approval may be required. Offer to help with enrollment if interested.",
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true
+        }
+      },
+      {
+        "id": "enrollment-node",
+        "type": "agentNode",
+        "position": { "x": 250, "y": 400 },
+        "data": {
+          "name": "Enrollment Response",
+          "prompt": "Explain the enrollment process: Learning Portal login, manager approval workflow, prerequisites, waitlist policy, and cancellation rules. Direct complex enrollment exceptions to an L&D coordinator.",
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true
+        }
+      },
+      {
+        "id": "schedule-node",
+        "type": "agentNode",
+        "position": { "x": 450, "y": 400 },
+        "data": {
+          "name": "Schedule Response",
+          "prompt": "Provide upcoming session dates, registration deadlines, and compliance due dates from the knowledge base. Mention online vs in-person locations. Offer to help enroll in a specific session.",
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true
+        }
+      },
+      {
+        "id": "compliance-node",
+        "type": "agentNode",
+        "position": { "x": 650, "y": 400 },
+        "data": {
+          "name": "Compliance Response",
+          "prompt": "Explain mandatory annual training requirements: harassment prevention, information security, APPI/data privacy, and manager-level anti-bribery. Include deadlines, completion tracking, and certificate availability. Direct exemption requests to HR/L&D.",
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true
+        }
+      },
+      {
+        "id": "escalation-node",
+        "type": "agentNode",
+        "position": { "x": 400, "y": 550 },
+        "data": {
+          "name": "Human Escalation",
+          "prompt": "The employee needs to speak with a human L&D coordinator. Say in their language: English: 'Certainly, I'll connect you with an L&D coordinator right away. Please hold for a moment.' Japanese: 'かしこまりました。ラーニング＆デベロップメント担当者にお繋ぎいたします。少々お待ちください。' Confirm the escalation is being processed.",
+          "add_global_prompt": true,
+          "allow_interrupt": false,
+          "wait_for_user_response": false
+        }
+      },
+      {
+        "id": "escalation-webhook",
+        "type": "webhook",
+        "position": { "x": 700, "y": 550 },
+        "data": {
+          "name": "Escalation Alert Webhook",
+          "enabled": true,
+          "http_method": "POST",
+          "endpoint_url": "http://127.0.0.1:5678/webhook/human-escalation",
+          "payload_template": {
+            "source": "ICMG-LD",
+            "event": "human_escalation",
+            "intent": "{{learner_intent}}",
+            "language": "{{caller_language}}",
+            "department": "{{employee_department}}",
+            "course": "{{course_interest}}",
+            "sentiment": "{{call_sentiment}}",
+            "escalated": true,
+            "timestamp": "{{call_end_time}}"
+          }
+        }
+      },
+      {
+        "id": "clarification-node",
+        "type": "agentNode",
+        "position": { "x": 400, "y": 700 },
+        "data": {
+          "name": "Follow-up",
+          "prompt": "Ask if the employee has any other training questions. If yes, continue helping. If no, proceed to end the call politely.",
+          "add_global_prompt": true,
+          "allow_interrupt": true,
+          "wait_for_user_response": true
+        }
+      },
+      {
+        "id": "end-icmg",
+        "type": "endCall",
+        "position": { "x": 400, "y": 850 },
+        "data": {
+          "name": "Goodbye",
+          "prompt": "Thank the employee warmly. English: 'Thank you for contacting ICMG Learning and Development. We wish you success in your professional development. Have a great day!' Japanese: '本日はお問い合わせいただき、誠にありがとうございました。今後ともよろしくお願いいたします。'",
+          "add_global_prompt": true
+        }
+      },
+      {
+        "id": "post-call-webhook",
+        "type": "webhook",
+        "position": { "x": 700, "y": 850 },
+        "data": {
+          "name": "Post-Call Ticket Webhook",
+          "enabled": true,
+          "http_method": "POST",
+          "endpoint_url": "http://127.0.0.1:5678/webhook/post-call-ticket",
+          "payload_template": {
+            "source": "ICMG-LD",
+            "event": "call_completed",
+            "intent": "{{learner_intent}}",
+            "language": "{{caller_language}}",
+            "department": "{{employee_department}}",
+            "course": "{{course_interest}}",
+            "sentiment": "{{call_sentiment}}",
+            "transcript_summary": "ICMG L&D training inquiry completed",
+            "escalated": false
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-start-main",
+        "type": "custom",
+        "source": "start-icmg",
+        "target": "main-dialogue",
+        "animated": true,
+        "data": {
+          "label": "Begin conversation",
+          "condition": "Always take this route after greeting"
+        }
+      },
+      {
+        "id": "edge-main-catalog",
+        "type": "custom",
+        "source": "main-dialogue",
+        "target": "catalog-node",
+        "animated": true,
+        "data": {
+          "label": "Course catalog inquiry",
+          "condition": "The caller is asking about available courses, programmes, or training options"
+        }
+      },
+      {
+        "id": "edge-main-enrollment",
+        "type": "custom",
+        "source": "main-dialogue",
+        "target": "enrollment-node",
+        "animated": true,
+        "data": {
+          "label": "Enrollment inquiry",
+          "condition": "The caller is asking about how to enroll, register, cancel, or get manager approval"
+        }
+      },
+      {
+        "id": "edge-main-schedule",
+        "type": "custom",
+        "source": "main-dialogue",
+        "target": "schedule-node",
+        "animated": true,
+        "data": {
+          "label": "Schedule inquiry",
+          "condition": "The caller is asking about session dates, deadlines, calendar, or when training occurs"
+        }
+      },
+      {
+        "id": "edge-main-compliance",
+        "type": "custom",
+        "source": "main-dialogue",
+        "target": "compliance-node",
+        "animated": true,
+        "data": {
+          "label": "Compliance inquiry",
+          "condition": "The caller is asking about mandatory training, compliance deadlines, certificates, or completion status"
+        }
+      },
+      {
+        "id": "edge-main-escalation",
+        "type": "custom",
+        "source": "main-dialogue",
+        "target": "escalation-node",
+        "animated": true,
+        "data": {
+          "label": "Escalate to human",
+          "condition": "The caller is frustrated, requests a human coordinator, or asks something the AI cannot answer from the knowledge base"
+        }
+      },
+      {
+        "id": "edge-catalog-clarify",
+        "type": "custom",
+        "source": "catalog-node",
+        "target": "clarification-node",
+        "animated": true,
+        "data": {
+          "label": "Any other questions",
+          "condition": "Course catalog question has been answered"
+        }
+      },
+      {
+        "id": "edge-enrollment-clarify",
+        "type": "custom",
+        "source": "enrollment-node",
+        "target": "clarification-node",
+        "animated": true,
+        "data": {
+          "label": "Any other questions",
+          "condition": "Enrollment question has been answered"
+        }
+      },
+      {
+        "id": "edge-schedule-clarify",
+        "type": "custom",
+        "source": "schedule-node",
+        "target": "clarification-node",
+        "animated": true,
+        "data": {
+          "label": "Any other questions",
+          "condition": "Schedule question has been answered"
+        }
+      },
+      {
+        "id": "edge-compliance-clarify",
+        "type": "custom",
+        "source": "compliance-node",
+        "target": "clarification-node",
+        "animated": true,
+        "data": {
+          "label": "Any other questions",
+          "condition": "Compliance question has been answered"
+        }
+      },
+      {
+        "id": "edge-escalation-alert",
+        "type": "custom",
+        "source": "escalation-node",
+        "target": "escalation-webhook",
+        "animated": true,
+        "data": {
+          "label": "Send escalation alert",
+          "condition": "Human escalation has been initiated"
+        }
+      },
+      {
+        "id": "edge-escalation-end",
+        "type": "custom",
+        "source": "escalation-webhook",
+        "target": "end-icmg",
+        "animated": true,
+        "data": {
+          "label": "End after escalation",
+          "condition": "Escalation alert has been sent"
+        }
+      },
+      {
+        "id": "edge-clarify-end",
+        "type": "custom",
+        "source": "clarification-node",
+        "target": "end-icmg",
+        "animated": true,
+        "data": {
+          "label": "End call",
+          "condition": "The caller has no more questions and wants to end the call"
+        }
+      },
+      {
+        "id": "edge-clarify-main",
+        "type": "custom",
+        "source": "clarification-node",
+        "target": "main-dialogue",
+        "animated": true,
+        "data": {
+          "label": "More questions",
+          "condition": "The caller has additional questions about a different topic"
+        }
+      },
+      {
+        "id": "edge-end-ticket",
+        "type": "custom",
+        "source": "end-icmg",
+        "target": "post-call-webhook",
+        "animated": true,
+        "data": {
+          "label": "Create support ticket",
+          "condition": "Always create a post-call ticket after call ends"
+        }
+      }
+    ],
+    "viewport": { "x": 0, "y": 0, "zoom": 0.75 }
+  }
+}

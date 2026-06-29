@@ -1,0 +1,172 @@
+{
+  "name": "GenuineStack — Slack Human Escalation Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "human-escalation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Webhook — Escalation",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "human-escalation"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1",
+              "name": "source",
+              "value": "={{ $json.body.source ?? $json.source ?? 'ICMG-LD' }}",
+              "type": "string"
+            },
+            {
+              "id": "e2",
+              "name": "event",
+              "value": "={{ $json.body.event ?? $json.event ?? 'human_escalation' }}",
+              "type": "string"
+            },
+            {
+              "id": "e3",
+              "name": "intent",
+              "value": "={{ $json.body.intent ?? $json.intent ?? 'other' }}",
+              "type": "string"
+            },
+            {
+              "id": "e4",
+              "name": "language",
+              "value": "={{ $json.body.language ?? $json.language ?? 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "e5",
+              "name": "department",
+              "value": "={{ $json.body.department ?? $json.department ?? 'unspecified' }}",
+              "type": "string"
+            },
+            {
+              "id": "e6",
+              "name": "course",
+              "value": "={{ $json.body.course ?? $json.course ?? 'unspecified' }}",
+              "type": "string"
+            },
+            {
+              "id": "e7",
+              "name": "sentiment",
+              "value": "={{ $json.body.sentiment ?? $json.sentiment ?? 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "e8",
+              "name": "escalated",
+              "value": "={{ $json.body.escalated ?? $json.escalated ?? true }}",
+              "type": "boolean"
+            },
+            {
+              "id": "e9",
+              "name": "alert_id",
+              "value": "=GS-ESC-{{ $now.format('yyyyMMdd-HHmmss') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Normalize Escalation",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \":rotating_light: *Human Escalation Required* — {{ $json.alert_id }}\",\n  \"blocks\": [\n    {\n      \"type\": \"header\",\n      \"text\": {\n        \"type\": \"plain_text\",\n        \"text\": \"🚨 L&D Human Escalation\",\n        \"emoji\": true\n      }\n    },\n    {\n      \"type\": \"section\",\n      \"fields\": [\n        { \"type\": \"mrkdwn\", \"text\": \"*Alert ID:*\\n{{ $json.alert_id }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Source:*\\n{{ $json.source }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Intent:*\\n{{ $json.intent }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Language:*\\n{{ $json.language }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Department:*\\n{{ $json.department }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Course:*\\n{{ $json.course }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Sentiment:*\\n{{ $json.sentiment }}\" },\n        { \"type\": \"mrkdwn\", \"text\": \"*Escalated:*\\n{{ $json.escalated }}\" }\n      ]\n    },\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"_Action required: An L&D coordinator should contact this employee promptly._\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "b1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Slack — Escalation Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"ok\",\n  \"alert_id\": \"{{ $('Normalize Escalation').item.json.alert_id }}\",\n  \"message\": \"Escalation alert dispatched to Slack\",\n  \"escalated\": true\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "b1b2c3d4-0004-4000-8000-000000000004",
+      "name": "Respond — Acknowledged",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Webhook — Escalation": {
+      "main": [
+        [
+          {
+            "node": "Normalize Escalation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Escalation": {
+      "main": [
+        [
+          {
+            "node": "Slack — Escalation Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack — Escalation Alert": {
+      "main": [
+        [
+          {
+            "node": "Respond — Acknowledged",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "gs-slack-escalation-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "genuinestack-japan"
+  },
+  "tags": [
+    {
+      "name": "genuinestack"
+    },
+    {
+      "name": "escalation"
+    },
+    {
+      "name": "slack"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "_meta": {
+    "template": "GenuineStack Japan — Salesforce Lead Create",
+    "version": "1.0.0",
+    "description": "REST payload for creating a Lead from TBIS admissions or inbound sales voice agent calls",
+    "endpoint": "POST {SALESFORCE_INSTANCE_URL}/services/data/v59.0/sobjects/Lead",
+    "content_type": "application/json",
+    "auth": "Bearer {SALESFORCE_ACCESS_TOKEN}",
+    "env_vars": [
+      "SALESFORCE_INSTANCE_URL",
+      "SALESFORCE_ACCESS_TOKEN",
+      "SALESFORCE_API_VERSION"
+    ],
+    "source_kits": ["TBIS", "sales-lead-qualification"]
+  },
+  "payload": {
+    "FirstName": "{{caller_first_name}}",
+    "LastName": "{{caller_last_name}}",
+    "Company": "TBIS Inquiry — {{child_grade}}",
+    "Email": "{{caller_email}}",
+    "Phone": "{{caller_phone}}",
+    "Title": "Parent / Guardian",
+    "LeadSource": "GenuineStack Voice Agent",
+    "Status": "Open - Not Contacted",
+    "Rating": "Warm",
+    "Description": "Voice agent inquiry.\n\nIntent: {{caller_intent}}\nLanguage: {{caller_language}}\nGrade inquiry: {{child_grade}}\nSentiment: {{call_sentiment}}\n\nSummary: {{transcript_summary}}",
+    "Industry": "Education",
+    "NumberOfEmployees": 1,
+    "Country": "Japan",
+    "State": "Tokyo",
+    "City": "Minato-ku"
+  },
+  "custom_fields_optional": {
+    "_comment": "Create these custom fields in Salesforce Setup if needed",
+    "GenuineStack_Call_ID__c": "{{workflow_run_id}}",
+    "GenuineStack_Intent__c": "{{caller_intent}}",
+    "GenuineStack_Language__c": "{{caller_language}}",
+    "GenuineStack_Sentiment__c": "{{call_sentiment}}",
+    "GenuineStack_Source_Kit__c": "TBIS"
+  },
+  "field_mapping": {
+    "caller_intent": "Description (embedded) + GenuineStack_Intent__c",
+    "caller_language": "Description (embedded) + GenuineStack_Language__c",
+    "child_grade": "Company suffix + Description",
+    "call_sentiment": "Description + GenuineStack_Sentiment__c",
+    "transcript_summary": "Description",
+    "workflow_run_id": "GenuineStack_Call_ID__c"
+  },
+  "example_resolved_payload": {
+    "FirstName": "Hanako",
+    "LastName": "Tanaka",
+    "Company": "TBIS Inquiry — Grade 5",
+    "Email": "hanako.tanaka@example.com",
+    "Phone": "+81312345678",
+    "Title": "Parent / Guardian",
+    "LeadSource": "GenuineStack Voice Agent",
+    "Status": "Open - Not Contacted",
+    "Rating": "Warm",
+    "Description": "Voice agent inquiry.\n\nIntent: admissions\nLanguage: Japanese\nGrade inquiry: Grade 5\nSentiment: neutral\n\nSummary: Parent asked about Grade 5 admissions process and campus tour availability.",
+    "Industry": "Education",
+    "Country": "Japan",
+    "State": "Tokyo",
+    "City": "Minato-ku",
+    "GenuineStack_Call_ID__c": "WR-20260629-001234",
+    "GenuineStack_Intent__c": "admissions",
+    "GenuineStack_Language__c": "Japanese",
+    "GenuineStack_Sentiment__c": "neutral",
+    "GenuineStack_Source_Kit__c": "TBIS"
+  }
+}

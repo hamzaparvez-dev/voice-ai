@@ -15,6 +15,7 @@ import {
   Key,
   LogOut,
   type LucideIcon,
+  LineChart,
   Megaphone,
   Phone,
   Settings,
@@ -148,6 +149,11 @@ const NAV_SECTIONS: SidebarNavSection[] = [
         title: "Reports",
         url: "/reports",
         icon: FileText,
+      },
+      {
+        title: "Executive",
+        url: "/executive",
+        icon: LineChart,
       }
     ],
   },

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from api.db.models import UserModel
 from api.services.auth.depends import get_user
-from api.services.reports import DailyReportService
+from api.services.reports import DailyReportService, ExecutiveReportService
 
 router = APIRouter(prefix="/organizations/reports")
 
@@ -33,6 +33,19 @@ class WorkflowRunDetail(BaseModel):
     run_id: int
     workflow_name: str
     created_at: str
+
+
+class ExecutiveReportResponse(BaseModel):
+    start_date: str
+    end_date: str
+    timezone: str
+    workflow_id: Optional[int]
+    metrics: Dict[str, Any]
+    sentiment_distribution: List[Dict[str, Any]]
+    intent_distribution: List[Dict[str, Any]]
+    duration_distribution: List[Dict[str, Any]]
+    daily_volume: List[Dict[str, Any]]
+    runs: List[Dict[str, Any]]
 
 
 @router.get("/daily", response_model=DailyReportResponse)
@@ -128,5 +141,45 @@ async def get_daily_runs_detail(
             workflow_id=workflow_id,
         )
         return [WorkflowRunDetail(**run) for run in runs]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/executive", response_model=ExecutiveReportResponse)
+async def get_executive_report(
+    start_date: str = Query(..., description="Start date in YYYY-MM-DD format"),
+    end_date: str = Query(..., description="End date in YYYY-MM-DD format"),
+    timezone: str = Query(..., description="IANA timezone (e.g., 'Asia/Tokyo')"),
+    workflow_id: Optional[int] = Query(
+        None, description="Optional workflow ID to filter by"
+    ),
+    user: UserModel = Depends(get_user),
+) -> ExecutiveReportResponse:
+    """Executive KPI summary for a date range — sentiment, escalations, intents, durations."""
+    if not user.selected_organization_id:
+        raise HTTPException(status_code=400, detail="No organization selected")
+
+    for label, value in (("start_date", start_date), ("end_date", end_date)):
+        try:
+            datetime.strptime(value, "%Y-%m-%d")
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid {label} format. Use YYYY-MM-DD",
+            )
+
+    report_service = ExecutiveReportService()
+
+    try:
+        report = await report_service.get_executive_report(
+            organization_id=user.selected_organization_id,
+            start_date=start_date,
+            end_date=end_date,
+            timezone=timezone,
+            workflow_id=workflow_id,
+        )
+        return ExecutiveReportResponse(**report)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

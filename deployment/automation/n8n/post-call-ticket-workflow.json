@@ -1,0 +1,279 @@
+{
+  "name": "GenuineStack — Post-Call Ticket",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "post-call-ticket",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "name": "Webhook — Post Call",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "post-call-ticket"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f1",
+              "name": "source",
+              "value": "={{ $json.body.source ?? $json.source ?? 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "f2",
+              "name": "event",
+              "value": "={{ $json.body.event ?? $json.event ?? 'call_completed' }}",
+              "type": "string"
+            },
+            {
+              "id": "f3",
+              "name": "intent",
+              "value": "={{ $json.body.intent ?? $json.intent ?? 'other' }}",
+              "type": "string"
+            },
+            {
+              "id": "f4",
+              "name": "language",
+              "value": "={{ $json.body.language ?? $json.language ?? 'unknown' }}",
+              "type": "string"
+            },
+            {
+              "id": "f5",
+              "name": "department",
+              "value": "={{ $json.body.department ?? $json.department ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f6",
+              "name": "course",
+              "value": "={{ $json.body.course ?? $json.course ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f7",
+              "name": "sentiment",
+              "value": "={{ $json.body.sentiment ?? $json.sentiment ?? 'neutral' }}",
+              "type": "string"
+            },
+            {
+              "id": "f8",
+              "name": "transcript_summary",
+              "value": "={{ $json.body.transcript_summary ?? $json.transcript_summary ?? '' }}",
+              "type": "string"
+            },
+            {
+              "id": "f9",
+              "name": "escalated",
+              "value": "={{ $json.body.escalated ?? $json.escalated ?? false }}",
+              "type": "boolean"
+            },
+            {
+              "id": "f10",
+              "name": "ticket_id",
+              "value": "=GS-TKT-{{ $now.format('yyyyMMdd') }}-{{ Math.floor(Math.random() * 9000 + 1000) }}",
+              "type": "string"
+            },
+            {
+              "id": "f11",
+              "name": "priority",
+              "value": "={{ ['negative','frustrated'].includes(($json.body.sentiment ?? $json.sentiment ?? '').toLowerCase()) ? 'high' : 'normal' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "name": "Normalize Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.sentiment }}",
+              "rightValue": "negative",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.sentiment }}",
+              "rightValue": "frustrated",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "name": "Negative Sentiment?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.TICKET_API_URL || 'https://httpbin.org/post' }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $env.TICKET_API_TOKEN || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"ticket_id\": \"{{ $json.ticket_id }}\",\n  \"title\": \"[{{ $json.source }}] {{ $json.intent }} — {{ $json.language }}\",\n  \"description\": \"{{ $json.transcript_summary }}\",\n  \"priority\": \"{{ $json.priority }}\",\n  \"metadata\": {\n    \"intent\": \"{{ $json.intent }}\",\n    \"language\": \"{{ $json.language }}\",\n    \"department\": \"{{ $json.department }}\",\n    \"course\": \"{{ $json.course }}\",\n    \"sentiment\": \"{{ $json.sentiment }}\",\n    \"escalated\": {{ $json.escalated }}\n  }\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "a1b2c3d4-0004-4000-8000-000000000004",
+      "name": "Create Ticket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 380],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SLACK_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \":warning: *Negative sentiment detected* — Ticket {{ $('Normalize Payload').item.json.ticket_id }}\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Sentiment Alert*\\n*Ticket:* {{ $('Normalize Payload').item.json.ticket_id }}\\n*Intent:* {{ $('Normalize Payload').item.json.intent }}\\n*Sentiment:* {{ $('Normalize Payload').item.json.sentiment }}\\n*Department:* {{ $('Normalize Payload').item.json.department }}\\n*Summary:* {{ $('Normalize Payload').item.json.transcript_summary }}\"\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "a1b2c3d4-0005-4000-8000-000000000005",
+      "name": "Slack — Sentiment Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 180],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"status\": \"ok\",\n  \"ticket_id\": \"{{ $('Normalize Payload').item.json.ticket_id }}\",\n  \"message\": \"Post-call ticket created\",\n  \"priority\": \"{{ $('Normalize Payload').item.json.priority }}\"\n}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "a1b2c3d4-0006-4000-8000-000000000006",
+      "name": "Respond — Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1200, 300]
+    }
+  ],
+  "connections": {
+    "Webhook — Post Call": {
+      "main": [
+        [
+          {
+            "node": "Normalize Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Payload": {
+      "main": [
+        [
+          {
+            "node": "Negative Sentiment?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Negative Sentiment?": {
+      "main": [
+        [
+          {
+            "node": "Slack — Sentiment Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack — Sentiment Alert": {
+      "main": [
+        [
+          {
+            "node": "Create Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Ticket": {
+      "main": [
+        [
+          {
+            "node": "Respond — Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "gs-post-call-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "genuinestack-japan"
+  },
+  "tags": [
+    {
+      "name": "genuinestack"
+    },
+    {
+      "name": "post-call"
+    }
+  ]
+}

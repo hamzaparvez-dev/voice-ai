@@ -1,0 +1,74 @@
+{
+  "_meta": {
+    "template": "GenuineStack Japan — Salesforce Case Create",
+    "version": "1.0.0",
+    "description": "REST payload for creating a support Case from voice agent escalations or post-call tickets (ICMG L&D, TBIS admissions)",
+    "endpoint": "POST {SALESFORCE_INSTANCE_URL}/services/data/v59.0/sobjects/Case",
+    "content_type": "application/json",
+    "auth": "Bearer {SALESFORCE_ACCESS_TOKEN}",
+    "env_vars": [
+      "SALESFORCE_INSTANCE_URL",
+      "SALESFORCE_ACCESS_TOKEN",
+      "SALESFORCE_API_VERSION"
+    ],
+    "source_kits": ["ICMG-LD", "TBIS"]
+  },
+  "payload": {
+    "Subject": "[{{source_kit}}] Voice Agent — {{intent}} ({{language}})",
+    "Description": "Post-call case from GenuineStack voice agent.\n\n--- Call Details ---\nSource Kit: {{source_kit}}\nIntent: {{intent}}\nLanguage: {{language}}\nSentiment: {{sentiment}}\nEscalated: {{escalated}}\n\n--- Context ---\nDepartment: {{department}}\nCourse/Grade: {{course_or_grade}}\n\n--- Summary ---\n{{transcript_summary}}\n\n--- System ---\nTicket ID: {{ticket_id}}\nWorkflow Run: {{workflow_run_id}}",
+    "Origin": "Phone",
+    "Status": "New",
+    "Priority": "{{case_priority}}",
+    "Type": "Voice Agent Escalation",
+    "Reason": "{{intent}}",
+    "SuppliedEmail": "{{caller_email}}",
+    "SuppliedPhone": "{{caller_phone}}",
+    "SuppliedName": "{{caller_name}}"
+  },
+  "priority_rules": {
+    "_comment": "Set case_priority in handler before POST",
+    "frustrated": "High",
+    "negative": "High",
+    "escalated_true": "High",
+    "default": "Medium"
+  },
+  "custom_fields_optional": {
+    "GenuineStack_Call_ID__c": "{{workflow_run_id}}",
+    "GenuineStack_Ticket_ID__c": "{{ticket_id}}",
+    "GenuineStack_Intent__c": "{{intent}}",
+    "GenuineStack_Sentiment__c": "{{sentiment}}",
+    "GenuineStack_Source_Kit__c": "{{source_kit}}",
+    "GenuineStack_Escalated__c": "{{escalated}}"
+  },
+  "field_mapping_icmg": {
+    "source_kit": "ICMG-LD (static)",
+    "intent": "learner_intent",
+    "language": "caller_language",
+    "department": "employee_department",
+    "course_or_grade": "course_interest",
+    "sentiment": "call_sentiment",
+    "escalated": "true for human_escalation event"
+  },
+  "field_mapping_tbis": {
+    "source_kit": "TBIS (static)",
+    "intent": "caller_intent",
+    "language": "caller_language",
+    "course_or_grade": "child_grade",
+    "sentiment": "neutral (default if not extracted)"
+  },
+  "example_resolved_payload": {
+    "Subject": "[ICMG-LD] Voice Agent — compliance (Japanese)",
+    "Description": "Post-call case from GenuineStack voice agent.\n\n--- Call Details ---\nSource Kit: ICMG-LD\nIntent: compliance\nLanguage: Japanese\nSentiment: frustrated\nEscalated: true\n\n--- Context ---\nDepartment: Finance\nCourse/Grade: APPI Data Privacy\n\n--- Summary ---\nEmployee asked about compliance deadline extension and requested human coordinator.\n\n--- System ---\nTicket ID: GS-TKT-20260629-7832\nWorkflow Run: WR-20260629-005678",
+    "Origin": "Phone",
+    "Status": "New",
+    "Priority": "High",
+    "Type": "Voice Agent Escalation",
+    "Reason": "compliance",
+    "GenuineStack_Call_ID__c": "WR-20260629-005678",
+    "GenuineStack_Ticket_ID__c": "GS-TKT-20260629-7832",
+    "GenuineStack_Intent__c": "compliance",
+    "GenuineStack_Sentiment__c": "frustrated",
+    "GenuineStack_Source_Kit__c": "ICMG-LD",
+    "GenuineStack_Escalated__c": true
+  }
+}

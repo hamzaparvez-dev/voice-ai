@@ -136,6 +136,56 @@ class ReportsClient(BaseDBClient):
                 for row in rows
             ]
 
+    async def get_workflow_runs_for_executive_report(
+        self,
+        organization_id: int,
+        start_utc: datetime,
+        end_utc: datetime,
+        workflow_id: Optional[int] = None,
+    ) -> List[Dict[str, Any]]:
+        """Fetch workflow runs with gathered_context for executive KPI aggregation."""
+        async with self.async_session() as session:
+            query = (
+                select(
+                    WorkflowRunModel.id,
+                    WorkflowRunModel.workflow_id,
+                    WorkflowRunModel.created_at,
+                    WorkflowRunModel.gathered_context,
+                    WorkflowRunModel.usage_info,
+                    WorkflowRunModel.initial_context,
+                    WorkflowModel.name.label("workflow_name"),
+                )
+                .select_from(WorkflowRunModel)
+                .join(WorkflowModel, WorkflowRunModel.workflow_id == WorkflowModel.id)
+                .where(
+                    and_(
+                        WorkflowModel.organization_id == organization_id,
+                        WorkflowRunModel.created_at >= start_utc,
+                        WorkflowRunModel.created_at <= end_utc,
+                    )
+                )
+                .order_by(WorkflowRunModel.created_at.desc())
+            )
+
+            if workflow_id is not None:
+                query = query.where(WorkflowRunModel.workflow_id == workflow_id)
+
+            result = await session.execute(query)
+            rows = result.all()
+
+            return [
+                {
+                    "id": row.id,
+                    "workflow_id": row.workflow_id,
+                    "workflow_name": row.workflow_name,
+                    "created_at": row.created_at,
+                    "gathered_context": row.gathered_context or {},
+                    "usage_info": row.usage_info or {},
+                    "initial_context": row.initial_context or {},
+                }
+                for row in rows
+            ]
+
     async def get_workflows_for_organization(
         self, organization_id: int
     ) -> List[WorkflowModel]:

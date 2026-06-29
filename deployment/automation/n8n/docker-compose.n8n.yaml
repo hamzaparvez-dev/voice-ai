@@ -1,0 +1,43 @@
+# GenuineStack Japan — n8n automation layer (standalone)
+# Does NOT modify dograh/docker-compose.yaml or core branding overrides.
+# Safe to run repeatedly: docker compose -f docker-compose.n8n.yaml up -d
+
+services:
+  n8n:
+    image: n8nio/n8n:1.76.1
+    container_name: genuinestack_n8n
+    restart: unless-stopped
+    ports:
+      # Bind to localhost only — expose via SSH tunnel or reverse proxy
+      - "127.0.0.1:5678:5678"
+    environment:
+      N8N_HOST: "${N8N_HOST:-localhost}"
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: "${N8N_PROTOCOL:-http}"
+      WEBHOOK_URL: "${N8N_WEBHOOK_URL:-http://127.0.0.1:5678}"
+      GENERIC_TIMEZONE: "${GENERIC_TIMEZONE:-Asia/Tokyo}"
+      TZ: "${TZ:-Asia/Tokyo}"
+      N8N_BASIC_AUTH_ACTIVE: "${N8N_BASIC_AUTH_ACTIVE:-true}"
+      N8N_BASIC_AUTH_USER: "${N8N_BASIC_AUTH_USER:-admin}"
+      N8N_BASIC_AUTH_PASSWORD: "${N8N_BASIC_AUTH_PASSWORD:-change-me}"
+      # Pass through to n8n Code/HTTP nodes via $env
+      SLACK_WEBHOOK_URL: "${SLACK_WEBHOOK_URL:-}"
+      TICKET_API_URL: "${TICKET_API_URL:-}"
+      TICKET_API_TOKEN: "${TICKET_API_TOKEN:-}"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5678/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - n8n-network
+
+networks:
+  n8n-network:
+    driver: bridge
+
+volumes:
+  n8n_data:

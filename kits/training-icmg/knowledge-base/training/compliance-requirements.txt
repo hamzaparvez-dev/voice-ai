@@ -1,0 +1,57 @@
+ICMG L&D — COMPLIANCE TRAINING REQUIREMENTS
+============================================
+
+MANDATORY ANNUAL TRAINING (ALL EMPLOYEES)
+-----------------------------------------
+1. Workplace Harassment Prevention (ハラスメント防止研修)
+   - Duration: 90 minutes
+   - Format: Online (self-paced or live)
+   - Deadline: September 30 each fiscal year
+   - Renewal: Annual
+
+2. Information Security Awareness (情報セキュリティ研修)
+   - Duration: 60 minutes
+   - Format: Online, self-paced
+   - Deadline: August 31 each fiscal year
+   - Renewal: Annual
+
+3. APPI / Data Privacy (個人情報保護/APPI研修)
+   - Duration: 90 minutes
+   - Format: Online live session or recorded
+   - Deadline: October 31 each fiscal year
+   - Renewal: Annual
+   - Required for all employees handling personal data
+
+MANAGER-LEVEL ADDITIONAL REQUIREMENTS
+-------------------------------------
+4. Anti-Bribery & Corruption (贈収賄防止研修)
+   - Duration: 60 minutes
+   - Audience: Managers and above
+   - Renewal: Every 2 years
+   - Deadline: Within 60 days of promotion to manager role
+
+NEW HIRE REQUIREMENTS
+---------------------
+- Complete all mandatory compliance training within 30 days of hire
+- ICMG Portfolio Orientation within first 14 days
+- Compliance status tracked in Learning Portal dashboard
+
+COMPLETION TRACKING
+- Completion recorded automatically in Learning Portal
+- Managers receive weekly compliance status reports
+- Non-completion after deadline: escalation to HR and direct manager
+- Repeated non-compliance may affect performance review
+
+CERTIFICATES
+- Digital certificate issued upon completion
+- Downloadable from Learning Portal → My Certificates
+- Valid for 12 months (annual renewal required)
+
+EXEMPTIONS & EXTENSIONS
+- Medical or leave-of-absence extensions: contact HR with documentation
+- Role changes mid-year: pro-rated deadlines apply
+- Contact L&D coordinator for exemption requests — not handled by AI
+
+REPORTING
+- Portfolio-wide compliance dashboard available to ICMG leadership
+- Individual completion status: Learning Portal → Compliance Status

@@ -1,0 +1,173 @@
+{
+  "_template": "GenuineStack Japan — Kintone Call Log App",
+  "_version": "1.0.0",
+  "_description": "Sample Kintone app definition for recording voice agent call summaries. Import fields manually in Kintone App Settings, or use this spec as a build guide.",
+  "_locale": "ja_JP",
+  "app": {
+    "name": "音声エージェント通話ログ",
+    "name_en": "Voice Agent Call Log",
+    "description": "GenuineStack voice agent post-call records from TBIS and ICMG L&D workflows",
+    "theme": "CLIPBOARD",
+    "language": "ja"
+  },
+  "fields": [
+    {
+      "code": "call_id",
+      "type": "SINGLE_LINE_TEXT",
+      "label": "通話ID",
+      "label_en": "Call ID",
+      "required": true,
+      "unique": true,
+      "description": "Unique call or workflow run identifier from GenuineStack"
+    },
+    {
+      "code": "source_kit",
+      "type": "DROP_DOWN",
+      "label": "ソースキット",
+      "label_en": "Source Kit",
+      "required": true,
+      "options": ["TBIS", "ICMG-LD", "Other"]
+    },
+    {
+      "code": "caller_intent",
+      "type": "DROP_DOWN",
+      "label": "問い合わせ種別",
+      "label_en": "Caller Intent",
+      "required": false,
+      "options": [
+        "admissions",
+        "curriculum",
+        "fees",
+        "facilities",
+        "course_catalog",
+        "enrollment",
+        "schedule",
+        "compliance",
+        "other"
+      ]
+    },
+    {
+      "code": "caller_language",
+      "type": "DROP_DOWN",
+      "label": "言語",
+      "label_en": "Language",
+      "required": false,
+      "options": ["English", "Japanese", "Other"]
+    },
+    {
+      "code": "context_field",
+      "type": "SINGLE_LINE_TEXT",
+      "label": "コンテキスト",
+      "label_en": "Context Field",
+      "required": false,
+      "description": "TBIS: grade_inquiry | ICMG-LD: employee_department or course_interest"
+    },
+    {
+      "code": "sentiment",
+      "type": "DROP_DOWN",
+      "label": "センチメント",
+      "label_en": "Sentiment",
+      "required": false,
+      "options": ["positive", "neutral", "negative", "frustrated"]
+    },
+    {
+      "code": "escalated",
+      "type": "CHECK_BOX",
+      "label": "エスカレーション",
+      "label_en": "Escalated",
+      "required": false,
+      "options": ["Yes"]
+    },
+    {
+      "code": "transcript_summary",
+      "type": "MULTI_LINE_TEXT",
+      "label": "通話要約",
+      "label_en": "Transcript Summary",
+      "required": false
+    },
+    {
+      "code": "call_timestamp",
+      "type": "DATETIME",
+      "label": "通話日時",
+      "label_en": "Call Timestamp",
+      "required": true
+    },
+    {
+      "code": "workflow_name",
+      "type": "SINGLE_LINE_TEXT",
+      "label": "ワークフロー名",
+      "label_en": "Workflow Name",
+      "required": false
+    },
+    {
+      "code": "ticket_id",
+      "type": "SINGLE_LINE_TEXT",
+      "label": "チケットID",
+      "label_en": "External Ticket ID",
+      "required": false,
+      "description": "Optional n8n or CRM ticket reference (GS-TKT-*)"
+    },
+    {
+      "code": "handler_status",
+      "type": "DROP_DOWN",
+      "label": "処理ステータス",
+      "label_en": "Handler Status",
+      "required": true,
+      "options": ["received", "processed", "error"],
+      "default": "received"
+    }
+  ],
+  "views": [
+    {
+      "name": "一覧",
+      "name_en": "All Records",
+      "fields": [
+        "call_timestamp",
+        "source_kit",
+        "caller_intent",
+        "caller_language",
+        "sentiment",
+        "escalated",
+        "handler_status"
+      ],
+      "sort": "call_timestamp desc"
+    },
+    {
+      "name": "エスカレーション",
+      "name_en": "Escalations",
+      "filter": "escalated in (\"Yes\")",
+      "fields": [
+        "call_timestamp",
+        "source_kit",
+        "caller_intent",
+        "context_field",
+        "sentiment",
+        "transcript_summary"
+      ]
+    }
+  ],
+  "sample_record_create": {
+    "_endpoint": "POST https://{KINTONE_SUBDOMAIN}.cybozu.com/k/v1/record.json",
+    "_headers": {
+      "X-Cybozu-API-Token": "${KINTONE_API_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "app": "${KINTONE_APP_ID}",
+    "record": {
+      "call_id": { "value": "WR-20260629-001234" },
+      "source_kit": { "value": "TBIS" },
+      "caller_intent": { "value": "admissions" },
+      "caller_language": { "value": "Japanese" },
+      "context_field": { "value": "Grade 5" },
+      "sentiment": { "value": "neutral" },
+      "escalated": { "value": [] },
+      "transcript_summary": {
+        "value": "Caller inquired about Grade 5 admissions process and application deadline."
+      },
+      "call_timestamp": { "value": "2026-06-29T15:30:00Z" },
+      "workflow_name": { "value": "TBIS Bilingual Admissions Agent" },
+      "ticket_id": { "value": "GS-TKT-20260629-4521" },
+      "handler_status": { "value": "processed" }
+    }
+  }
+}
