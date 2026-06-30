@@ -53,7 +53,7 @@ export default function ExecutiveDashboardPage() {
 
   useEffect(() => {
     const loadMeta = async () => {
-      if (!auth.isAuthenticated) return;
+      if (auth.loading || !auth.isAuthenticated) return;
 
       try {
         const [wfRes, prefRes] = await Promise.all([
@@ -67,10 +67,10 @@ export default function ExecutiveDashboardPage() {
       }
     };
     loadMeta();
-  }, [auth.isAuthenticated]);
+  }, [auth.loading, auth.isAuthenticated]);
 
   const loadReport = useCallback(async () => {
-    if (!auth.isAuthenticated) return;
+    if (auth.loading || !auth.isAuthenticated) return;
 
     setLoading(true);
     setError(null);
@@ -90,7 +90,7 @@ export default function ExecutiveDashboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [auth.isAuthenticated, startDate, endDate, timezone, selectedWorkflow]);
+  }, [auth.loading, auth.isAuthenticated, startDate, endDate, timezone, selectedWorkflow]);
 
   useEffect(() => {
     loadReport();
